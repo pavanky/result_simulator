@@ -1,3 +1,4 @@
-Q1,IPL_4,IPL_3
-Q2,Q1_WINNER,IPL_2
-Final,Q2_WINNER,IPL_1
+Match ID, Division_standing, Division_standing, Winner
+Q1,IPL_4,IPL_3,X
+Q2,Q1_WINNER,IPL_2,X
+Final,Q2_WINNER,IPL_1,X
