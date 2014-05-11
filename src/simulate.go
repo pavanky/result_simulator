@@ -7,7 +7,7 @@ import (
     "encoding/csv"
 )
 
-func readcontents(dir string, name string) [][]string {
+func readContents(dir string, name string) [][]string {
     file, err := os.Open(dir + "/" + name)
     defer file.Close()
 
@@ -32,7 +32,7 @@ func readcontents(dir string, name string) [][]string {
     return contents
 }
 
-func showcontents(contents [][]string) {
+func showContents(contents [][]string) {
     for _, line := range contents {
         fmt.Println(line)
     }
@@ -40,7 +40,7 @@ func showcontents(contents [][]string) {
 
 func main() {
     dir := os.Args[1]
-    showcontents(readcontents(dir, "teams.csv"))
-    showcontents(readcontents(dir, "matches.csv"))
-    showcontents(readcontents(dir, "probability.csv"))
+
+    matches := readContents(dir, "matches.csv")
+    showContents(matches)
 }
