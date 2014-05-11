@@ -42,7 +42,7 @@ func readContents(dir string, name string) [][]string {
     return contents
 }
 
-func currentStandings(m map[string]Team, matches [][]string) map[string]Team {
+func parseMatches(m map[string]Team, matches [][]string) map[string]Team {
     for _, match := range matches {
         for i := 0; i < 2; i++ {
             team := match[i]
@@ -99,6 +99,6 @@ func main() {
     matches := readContents(dir, "matches.csv")
 
     tmap := parseTeams(teams[1:])
-    standings := currentStandings(tmap, matches[1:])
+    standings := parseMatches(tmap, matches[1:])
     showStandings(standings)
 }
