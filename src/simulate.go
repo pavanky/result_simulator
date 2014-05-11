@@ -4,6 +4,7 @@ import (
     "fmt"
     "os"
     "io"
+    "sort"
     "strconv"
     "encoding/csv"
 )
@@ -15,6 +16,18 @@ type Team struct {
     points float64
     priority float64
     id int
+}
+
+type TeamArray []Team
+
+func (a TeamArray) Len() int           { return len(a) }
+func (a TeamArray) Swap(i, j int)      { a[i],a[j] = a[j],a[i] }
+
+func (a TeamArray) Less(i, j int) bool {
+    if a[i].points == a[j].points {
+        return a[i].priority > a[j].priority
+    }
+    return a[i].points > a[j].points
 }
 
 func readContents(dir string, name string) [][]string {
@@ -67,8 +80,15 @@ func parseMatches(m map[string]Team, matches [][]string) map[string]Team {
 }
 
 func showStandings(standings map[string]Team) {
+    teams := []Team{}
+    for _,team := range standings {
+        teams = append(teams, team)
+    }
+
+    sort.Sort(TeamArray(teams))
+
     fmt.Printf("Team Name\t Matches\t Points\t\n")
-    for _, val := range standings {
+    for _, val := range teams {
         fmt.Printf("%s\t\t %2d\t\t %.0f\t\n", val.name, val.matches, val.points)
     }
 }
