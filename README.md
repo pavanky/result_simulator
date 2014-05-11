@@ -30,8 +30,12 @@ The required needs to be in a csv format. All necessary files need to be in the 
 
 I developed this on Linux. It should work without a problem on other OS as well.
 
-- run `make` to build
-- alternatively `go build src/simulate.go` should work also
+- Build
+    - run `make` to build
+    - alternatively `go build src/simulate.go` should work also
+
+- Run
+   - `./simulate path/to/data/directory`
 
 **Output**
 
