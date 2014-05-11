@@ -8,12 +8,14 @@ import (
     "encoding/csv"
 )
 
-type Standing struct {
+type Team struct {
     name string
+    division string
     matches int
     points float64
+    priority float64
+    id int
 }
-
 
 func readContents(dir string, name string) [][]string {
     file, err := os.Open(dir + "/" + name)
@@ -40,11 +42,7 @@ func readContents(dir string, name string) [][]string {
     return contents
 }
 
-func currentStandings(matches [][]string) map[string]Standing {
-
-    var m map[string]Standing
-    m = make(map[string]Standing)
-
+func currentStandings(m map[string]Team, matches [][]string) map[string]Team {
     for _, match := range matches {
         for i := 0; i < 2; i++ {
             team := match[i]
@@ -62,26 +60,45 @@ func currentStandings(matches [][]string) map[string]Standing {
             c := m[team]
             c.matches = c.matches + 1
             c.points = c.points + points
-            c.name = team
             m[team] = c
         }
     }
-
     return m
 }
 
-func showStandings(standings map[string]Standing) {
-
+func showStandings(standings map[string]Team) {
     fmt.Printf("Team Name\t Matches\t Points\t\n")
-    for key, val := range standings {
-        fmt.Printf("%s\t\t %2d\t\t %.0f\t\n", key, val.matches, val.points)
+    for _, val := range standings {
+        fmt.Printf("%s\t\t %2d\t\t %.0f\t\n", val.name, val.matches, val.points)
     }
+}
+
+func parseTeams(teams [][]string) map[string]Team {
+    var m map[string]Team
+    m = make(map[string]Team)
+    for idx, entry := range teams {
+        team := entry[0]
+        prty, err := strconv.ParseFloat(entry[2],32)
+        if err != nil {
+            panic(err)
+        }
+
+        c := m[team]
+        c.name = team
+        c.division = entry[1]
+        c.id = idx - 1
+        c.priority = prty
+        m[team] = c
+    }
+    return m
 }
 
 func main() {
     dir := os.Args[1]
-
+    teams := readContents(dir, "teams.csv")
     matches := readContents(dir, "matches.csv")
-    standings := currentStandings(matches[1:])
+
+    tmap := parseTeams(teams[1:])
+    standings := currentStandings(tmap, matches[1:])
     showStandings(standings)
 }
