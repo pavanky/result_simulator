@@ -44,6 +44,7 @@ Work in progress. Currently displays the predicted results after 100000 runs.
 Here is a sample output for IPL 2014 after 35 matches:
 
 ```
+Current Standings
 Team Name        Matches         Points
 KXIP              9              14
 CSK               9              14
