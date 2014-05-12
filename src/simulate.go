@@ -26,7 +26,9 @@ type Points struct {
 }
 
 type TeamArray []Team
-type TeamMap map[string]Team
+type TeamMap map[string]int
+
+var tm TeamMap
 
 func (a TeamArray) Len() int           { return len(a) }
 func (a TeamArray) Swap(i, j int)      { a[i],a[j] = a[j],a[i] }
@@ -63,26 +65,31 @@ func readContents(dir string, name string) [][]string {
     return contents
 }
 
-func parseTeams(teams [][]string) TeamMap {
-    var m TeamMap
-    m = make(TeamMap)
-    nteams := len(teams)
-    for idx, entry := range teams {
-        team := entry[0]
+func parseTeams(tdata [][]string) TeamArray {
+    tm = make(TeamMap)
+    nteams := len(tdata)
+    teams := make(TeamArray, nteams)
+
+    for idx, entry := range tdata {
+        name := entry[0]
         prty, err := strconv.ParseFloat(entry[2],32)
         if err != nil {
             panic(err)
         }
 
-        c := m[team]
-        c.name = team
-        c.division = entry[1]
-        c.id = idx
-        c.priority = prty
-        c.final = make([]float64, nteams, nteams)
-        m[team] = c
+        tm[name] = idx
+
+        var t Team
+        t.name = name
+        t.division = entry[1]
+        t.id = idx
+        t.priority = prty
+        t.points = 0
+        t.final = make([]float64, nteams, nteams)
+
+        teams[idx] = t
     }
-    return m
+    return teams
 }
 
 func getWinProb(a Team, b Team) float64 {
@@ -102,15 +109,15 @@ func predictPoints(a Team, b Team, pts Points) (float64, float64) {
 
 }
 
-func getPoints(m TeamMap, matches [][]string, pts Points, final bool) TeamMap {
+func getPoints(teams TeamArray, matches [][]string, pts Points, final bool) TeamArray {
     for _, match := range matches {
         a := match[0]
         apts := match[2]
-        ateam := m[a]
+        ateam := teams[tm[a]]
 
         b := match[1]
         bpts := match[3]
-        bteam := m[b]
+        bteam := teams[tm[b]]
 
         if (apts == "X") || (bpts == "X") {
             if final == false {
@@ -134,23 +141,18 @@ func getPoints(m TeamMap, matches [][]string, pts Points, final bool) TeamMap {
         }
 
         ateam.matches = ateam.matches + 1
-        m[a] = ateam
+        teams[tm[a]] = ateam
 
         bteam.matches = bteam.matches + 1
-        m[b] = bteam
+        teams[tm[b]] = bteam
     }
 
-    return m
+    return teams
 }
 
-func showStandings(standings TeamMap) {
-    teams := []Team{}
-    for _,team := range standings {
-        teams = append(teams, team)
-    }
+func showStandings(teams TeamArray) {
 
     sort.Sort(TeamArray(teams))
-
     fmt.Printf("Team Name\t Matches\t Points\t\n")
     for _, val := range teams {
         fmt.Printf("%s\t\t %2d\t\t %.0f\t\n", val.name, val.matches, val.points)
@@ -170,7 +172,9 @@ func main() {
     fmt.Println("Current Standings")
     teams := parseTeams(tdata[1:])
     teams  = getPoints(teams, mdata[1:], pts, false)
+    fmt.Println(teams)
     showStandings(teams)
+    fmt.Println(teams)
 
     teams = parseTeams(tdata[1:])
     teams = getPoints(teams, mdata[1:], pts, true)
