@@ -175,16 +175,16 @@ func getRanks(teams TeamArray) TeamArray {
 
 func showProbDist(teams TeamArray, num int) {
 
-    fmt.Printf("Team\t\t")
+    fmt.Printf("Team\t")
     for i := 0; i < len(teams); i++ {
-        fmt.Printf("Pos %d\t\t", i + 1)
+        fmt.Printf("Pos %d\t", i + 1)
     }
     fmt.Printf("\n")
 
     for _, team := range teams {
-        fmt.Printf("%s\t\t", team.name)
+        fmt.Printf("%s\t", team.name)
         for i := 0; i < len(team.final); i++ {
-            fmt.Printf("%2.2f\t\t", 100*team.final[i] / float64(num))
+            fmt.Printf("%2.2f\t", 100*team.final[i] / float64(num))
         }
         fmt.Printf("\n")
     }
