@@ -157,6 +157,37 @@ func showStandings(teams TeamArray) {
     for _, val := range teams {
         fmt.Printf("%s\t\t %2d\t\t %.0f\t\n", val.name, val.matches, val.points)
     }
+    fmt.Printf("\n")
+}
+
+func getRanks(teams TeamArray) TeamArray {
+    sort.Sort(TeamArray(teams))
+
+    for idx, team := range teams {
+        tm[team.name] = idx
+        team.final[idx] = team.final[idx] + 1
+        team.points = 0
+        teams[idx] = team
+    }
+
+    return teams
+}
+
+func showProbDist(teams TeamArray, num int) {
+
+    fmt.Printf("Team\t\t")
+    for i := 0; i < len(teams); i++ {
+        fmt.Printf("Pos %d\t\t", i + 1)
+    }
+    fmt.Printf("\n")
+
+    for _, team := range teams {
+        fmt.Printf("%s\t\t", team.name)
+        for i := 0; i < len(team.final); i++ {
+            fmt.Printf("%2.2f\t\t", 100*team.final[i] / float64(num))
+        }
+        fmt.Printf("\n")
+    }
 }
 
 func main() {
@@ -172,10 +203,15 @@ func main() {
     fmt.Println("Current Standings")
     teams := parseTeams(tdata[1:])
     teams  = getPoints(teams, mdata[1:], pts, false)
-    fmt.Println(teams)
     showStandings(teams)
-    fmt.Println(teams)
 
     teams = parseTeams(tdata[1:])
-    teams = getPoints(teams, mdata[1:], pts, true)
+
+    nruns := 100000
+    for i := 0; i < nruns; i++ {
+        teams = getPoints(teams, mdata[1:], pts, true)
+        teams = getRanks(teams)
+    }
+
+    showProbDist(teams, nruns)
 }
