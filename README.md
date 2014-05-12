@@ -39,11 +39,12 @@ I developed this on Linux. It should work without a problem on other OS as well.
 
 **Output**
 
-Work in progress. Currently only reading the match information and showing current standing.
+Work in progress. Currently displays the predicted results after 100000 runs.
 
 Here is a sample output for IPL 2014 after 35 matches:
 
 ```
+Current Standings
 Team Name        Matches         Points
 KXIP              9              14
 CSK               9              14
@@ -53,5 +54,14 @@ SRH               8              8
 RCB               9              6
 MI                8              4
 DD                9              4
-```
 
+Team            Pos 1           Pos 2           Pos 3           Pos 4           Pos 5           Pos 6           Pos 7           Pos 8
+KXIP            54.41           30.70           11.68           3.04            0.17            0.00            0.00            0.00
+CSK             35.04           45.88           14.70           3.89            0.49            0.00            0.00            0.00
+RR              9.78            19.69           54.67           13.31           2.15            0.38            0.02            0.00
+SRH             0.73            2.98            11.32           34.06           33.76           11.78           4.58            0.80
+KKR             0.04            0.70            6.15            37.63           32.15           14.87           6.96            1.49
+MI              0.00            0.02            0.69            2.43            8.86            20.97           40.09           26.95
+RCB             0.00            0.03            0.77            5.28            19.07           40.11           24.85           9.90
+DD              0.00            0.00            0.01            0.36            3.36            11.89           23.51           60.87
+```
