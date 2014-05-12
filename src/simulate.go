@@ -66,6 +66,7 @@ func readContents(dir string, name string) [][]string {
 func parseTeams(teams [][]string) TeamMap {
     var m TeamMap
     m = make(TeamMap)
+    nteams := len(teams)
     for idx, entry := range teams {
         team := entry[0]
         prty, err := strconv.ParseFloat(entry[2],32)
@@ -76,25 +77,12 @@ func parseTeams(teams [][]string) TeamMap {
         c := m[team]
         c.name = team
         c.division = entry[1]
-        c.id = idx - 1
+        c.id = idx
         c.priority = prty
+        c.final = make([]float64, nteams, nteams)
         m[team] = c
     }
     return m
-}
-
-func showStandings(standings TeamMap) {
-    teams := []Team{}
-    for _,team := range standings {
-        teams = append(teams, team)
-    }
-
-    sort.Sort(TeamArray(teams))
-
-    fmt.Printf("Team Name\t Matches\t Points\t\n")
-    for _, val := range teams {
-        fmt.Printf("%s\t\t %2d\t\t %.0f\t\n", val.name, val.matches, val.points)
-    }
 }
 
 func getWinProb(a Team, b Team) float64 {
@@ -102,7 +90,7 @@ func getWinProb(a Team, b Team) float64 {
     return 0.5
 }
 
-func getPoints(a Team, b Team, pts Points) (float64, float64) {
+func predictPoints(a Team, b Team, pts Points) (float64, float64) {
     prob := getWinProb(a, b)
     val := rand.Float64()
 
@@ -114,7 +102,7 @@ func getPoints(a Team, b Team, pts Points) (float64, float64) {
 
 }
 
-func getStandings(m TeamMap, matches [][]string, pts Points, final bool) TeamMap {
+func getPoints(m TeamMap, matches [][]string, pts Points, final bool) TeamMap {
     for _, match := range matches {
         a := match[0]
         apts := match[2]
@@ -128,7 +116,7 @@ func getStandings(m TeamMap, matches [][]string, pts Points, final bool) TeamMap
             if final == false {
                 continue
             }
-            apoints, bpoints := getPoints(ateam, bteam, pts)
+            apoints, bpoints := predictPoints(ateam, bteam, pts)
             ateam.points = ateam.points + apoints
             bteam.points = bteam.points + bpoints
         } else {
@@ -155,23 +143,35 @@ func getStandings(m TeamMap, matches [][]string, pts Points, final bool) TeamMap
     return m
 }
 
+func showStandings(standings TeamMap) {
+    teams := []Team{}
+    for _,team := range standings {
+        teams = append(teams, team)
+    }
+
+    sort.Sort(TeamArray(teams))
+
+    fmt.Printf("Team Name\t Matches\t Points\t\n")
+    for _, val := range teams {
+        fmt.Printf("%s\t\t %2d\t\t %.0f\t\n", val.name, val.matches, val.points)
+    }
+}
+
 func main() {
     dir := os.Args[1]
     rand.Seed(time.Now().UTC().UnixNano())
 
-    teams := readContents(dir, "teams.csv")
-    matches := readContents(dir, "matches.csv")
+    tdata := readContents(dir, "teams.csv")
+    mdata := readContents(dir, "matches.csv")
 
     // FIXME: Read this from a file
     pts := Points{2, 0, 0, 0}
 
     fmt.Println("Current Standings")
-    tmap := parseTeams(teams[1:])
-    tmap  = getStandings(tmap, matches[1:], pts, false)
-    showStandings(tmap)
+    teams := parseTeams(tdata[1:])
+    teams  = getPoints(teams, mdata[1:], pts, false)
+    showStandings(teams)
 
-    fmt.Println("Final Standings")
-    tmap = parseTeams(teams[1:])
-    tmap = getStandings(tmap, matches[1:], pts, true)
-    showStandings(tmap)
+    teams = parseTeams(tdata[1:])
+    teams = getPoints(teams, mdata[1:], pts, true)
 }
